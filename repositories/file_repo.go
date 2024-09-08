@@ -1,7 +1,9 @@
 package repositories
 
 import (
+	"errors"
 	"fmt"
+	"io/fs"
 	"log/slog"
 	"os"
 	"path/filepath"
@@ -16,7 +18,7 @@ type FileRepository struct {
 
 func NewFileRepository(uploadsDir string) (Repository, error) {
 	if _, err := os.Stat(uploadsDir); err != nil {
-		if os.IsNotExist(err) {
+		if errors.Is(err, fs.ErrNotExist) {
 			slog.Info(fmt.Sprintf("Creating %s directory", uploadsDir))
 
 			if err := os.Mkdir(uploadsDir, 0755); err != nil {
@@ -52,4 +54,21 @@ func (repo *FileRepository) Create(dto *models.DicomDTO) error {
 	slog.Info("File successfully written", slog.String("filename", filename))
 
 	return nil
+}
+
+func (repo *FileRepository) Read(instanceId string) (*models.DicomDTO, error) {
+	filename := fmt.Sprintf("%s.dcm", instanceId)
+
+	dataset, err := dicom.ParseFile(filepath.Join(repo.uploadsDir, filename), nil)
+	if err != nil {
+		slog.Error(fmt.Sprintf("Could not read %s", filename))
+		return nil, err
+	}
+
+	slog.Info("File successfully read", slog.String("filename", filename))
+
+	return &models.DicomDTO{
+		InstanceId: instanceId,
+		Dataset:    &dataset,
+	}, nil
 }

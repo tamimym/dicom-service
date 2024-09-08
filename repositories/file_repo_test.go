@@ -2,6 +2,7 @@ package repositories_test
 
 import (
 	"fmt"
+	"io/fs"
 	"os"
 	"path/filepath"
 	"testing"
@@ -38,5 +39,23 @@ func TestFileRepository(t *testing.T) {
 
 		assert.Nil(t, err)
 		assert.FileExists(t, filepath.Join(dir, fmt.Sprintf("%s.dcm", dto.InstanceId)))
+	})
+
+	t.Run("it returns error if it tries to read an instance id that does not exist", func(t *testing.T) {
+		d, err := repo.Read("abcd")
+
+		assert.Nil(t, d)
+		assert.ErrorIs(t, err, fs.ErrNotExist)
+	})
+
+	t.Run("it returns DTO if read is successful", func(t *testing.T) {
+		err := repo.Create(dto)
+		assert.Nil(t, err)
+
+		d, err := repo.Read(dto.InstanceId)
+
+		assert.Nil(t, err)
+		assert.Equal(t, dto.InstanceId, d.InstanceId)
+		assert.NotNil(t, d.Dataset)
 	})
 }
