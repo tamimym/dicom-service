@@ -13,6 +13,19 @@ const (
 	UPLOADS_DIR = "uploads"
 )
 
+func NewRouter(repo repositories.Repository) *http.ServeMux {
+	router := http.NewServeMux()
+
+	router.HandleFunc("GET /instance/{instance}", handlers.QueryHeader(repo))
+	router.HandleFunc("POST /instance", handlers.Upload(repo))
+
+	router.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
+		w.WriteHeader(http.StatusNotImplemented)
+	})
+
+	return router
+}
+
 func main() {
 	repo, err := repositories.NewFileRepository(UPLOADS_DIR)
 	if err != nil {
@@ -20,21 +33,9 @@ func main() {
 		panic(err)
 	}
 
-	router := http.NewServeMux()
-
-	router.HandleFunc("GET /studies/{study}/series/{series}/instance/{instance}/metadata", func(w http.ResponseWriter, r *http.Request) {
-		w.WriteHeader(http.StatusNotImplemented)
-	})
-
-	router.HandleFunc("POST /instance", handlers.Upload(repo))
-
-	router.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
-		w.WriteHeader(http.StatusNotImplemented)
-	})
-
 	server := http.Server{
 		Addr:    ":8080",
-		Handler: router,
+		Handler: NewRouter(repo),
 	}
 
 	slog.Info("Starting server on port :8080")
