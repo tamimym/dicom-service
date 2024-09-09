@@ -11,6 +11,7 @@ import (
 
 const (
 	UPLOADS_DIR = "uploads"
+	IMAGE_DIR   = "images"
 )
 
 func NewRouter(repo repositories.Repository) *http.ServeMux {
@@ -18,6 +19,7 @@ func NewRouter(repo repositories.Repository) *http.ServeMux {
 
 	router.HandleFunc("GET /instance/{instance}", handlers.QueryHeader(repo))
 	router.HandleFunc("POST /instance", handlers.Upload(repo))
+	router.HandleFunc("GET /instance/{instance}/image", handlers.Image(repo))
 
 	router.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
 		w.WriteHeader(http.StatusNotImplemented)
@@ -27,7 +29,7 @@ func NewRouter(repo repositories.Repository) *http.ServeMux {
 }
 
 func main() {
-	repo, err := repositories.NewFileRepository(UPLOADS_DIR)
+	repo, err := repositories.NewFileRepository(UPLOADS_DIR, IMAGE_DIR)
 	if err != nil {
 		slog.Error(fmt.Sprintf("Failed to setup file repository at: %s", UPLOADS_DIR))
 		panic(err)

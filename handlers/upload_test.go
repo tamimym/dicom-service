@@ -16,20 +16,22 @@ import (
 	"github.com/tamimym/dicom-service/repositories"
 )
 
-func setup() (repositories.Repository, string) {
-	dir, _ := os.MkdirTemp("", "")
-	repo, _ := repositories.NewFileRepository(dir)
+func setup() (repositories.Repository, string, string) {
+	upload_dir, _ := os.MkdirTemp("", "")
+	image_dir, _ := os.MkdirTemp("", "")
+	repo, _ := repositories.NewFileRepository(upload_dir, image_dir)
 
-	return repo, dir
+	return repo, upload_dir, image_dir
 }
 
-func teardown(dir string) {
-	os.RemoveAll(dir)
+func teardown(upload_dir string, image_dir string) {
+	os.RemoveAll(upload_dir)
+	os.RemoveAll(image_dir)
 }
 
 func TestUpload(t *testing.T) {
-	repo, dir := setup()
-	defer teardown(dir)
+	repo, dir1, dir2 := setup()
+	defer teardown(dir1, dir2)
 
 	t.Run("it returns bad request status if no instance file is uploaded", func(t *testing.T) {
 		uploadHandler := handlers.Upload(repo)

@@ -15,8 +15,8 @@ import (
 )
 
 func TestQueryHeader(t *testing.T) {
-	repo, dir := setup()
-	defer teardown(dir)
+	repo, dir1, dir2 := setup()
+	defer teardown(dir1, dir2)
 
 	t.Run("it returns bad request status if no instance id given", func(t *testing.T) {
 		queryHeaderHandler := handlers.QueryHeader(repo)
@@ -51,7 +51,7 @@ func TestQueryHeader(t *testing.T) {
 	t.Run("it returns header attribute based on tag given", func(t *testing.T) {
 		instanceId := "1.2.826.0.1.3680043.2.1074.8138928452617025399165543974931135073"
 		input, _ := os.ReadFile("../test_data/IM000002")
-		err := os.WriteFile(filepath.Join(dir, fmt.Sprintf("%s.dcm", instanceId)), input, 0644)
+		err := os.WriteFile(filepath.Join(dir1, fmt.Sprintf("%s.dcm", instanceId)), input, 0644)
 		assert.Nil(t, err)
 
 		queryValues := url.Values{}

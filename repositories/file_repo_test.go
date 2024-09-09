@@ -12,9 +12,10 @@ import (
 	"github.com/tamimym/dicom-service/repositories"
 )
 
-func setup() (repositories.Repository, string, *models.DicomDTO) {
+func setup() (repositories.Repository, string, string, *models.DicomDTO) {
 	dir, _ := os.MkdirTemp("", "")
-	repo, _ := repositories.NewFileRepository(dir)
+	dir2, _ := os.MkdirTemp("", "")
+	repo, _ := repositories.NewFileRepository(dir, dir2)
 
 	testFile, _ := os.Open("../test_data/IM000020")
 	defer testFile.Close()
@@ -23,22 +24,23 @@ func setup() (repositories.Repository, string, *models.DicomDTO) {
 
 	dto, _ := models.NewDicomDTO(testFile, fileInfo.Size())
 
-	return repo, dir, dto
+	return repo, dir, dir2, dto
 }
 
-func teardown(dir string) {
-	os.RemoveAll(dir)
+func teardown(dir1 string, dir2 string) {
+	os.RemoveAll(dir1)
+	os.RemoveAll(dir2)
 }
 
 func TestFileRepository(t *testing.T) {
-	repo, dir, dto := setup()
-	defer teardown(dir)
+	repo, dir1, dir2, dto := setup()
+	defer teardown(dir1, dir2)
 
 	t.Run("it writes a dicom file to the directory with instance id as filename", func(t *testing.T) {
 		err := repo.Create(dto)
 
 		assert.Nil(t, err)
-		assert.FileExists(t, filepath.Join(dir, fmt.Sprintf("%s.dcm", dto.InstanceId)))
+		assert.FileExists(t, filepath.Join(dir1, fmt.Sprintf("%s.dcm", dto.InstanceId)))
 	})
 
 	t.Run("it returns error if it tries to read an instance id that does not exist", func(t *testing.T) {

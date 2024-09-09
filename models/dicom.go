@@ -11,6 +11,7 @@ import (
 type DicomDTO struct {
 	InstanceId string         `json:"instanceId"`
 	Dataset    *dicom.Dataset `json:"-"`
+	ImagePath  string         `json:"-"`
 }
 
 func NewDicomDTO(in io.Reader, bytesToRead int64) (*DicomDTO, error) {
