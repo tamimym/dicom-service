@@ -9,6 +9,7 @@ import (
 	"github.com/suyashkumar/dicom/pkg/tag"
 )
 
+// Mostly adapted from parseTag function in "github.com/suyashkumar/dicom/pkg/tag"
 func ParseTag(tagValue string) (tag.Tag, error) {
 	parts := strings.Split(strings.Trim(tagValue, "()"), ",")
 	if len(parts) != 2 {

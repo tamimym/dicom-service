@@ -40,6 +40,7 @@ func TestUpload(t *testing.T) {
 	})
 
 	t.Run("it returns entity too large status if file is too big", func(t *testing.T) {
+		// Write the file into the request body as a multipart form data
 		body := &bytes.Buffer{}
 		writer := multipart.NewWriter(body)
 		fw, _ := writer.CreateFormFile("instance", "toobig.dat")
@@ -60,6 +61,7 @@ func TestUpload(t *testing.T) {
 	})
 
 	t.Run("it returns response with instance ID if file upload successful", func(t *testing.T) {
+		// Write the file into the request body as a multipart form data
 		body := &bytes.Buffer{}
 		writer := multipart.NewWriter(body)
 		fw, _ := writer.CreateFormFile("instance", "IM000002")

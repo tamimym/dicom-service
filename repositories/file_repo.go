@@ -89,6 +89,8 @@ func (repo *FileRepository) Read(instanceId string) (*models.DicomDTO, error) {
 
 }
 
+// Ideally, this function should be part of a static asset service and
+// FileRepository calls the service.
 func (repo *FileRepository) generateImage(dto *models.DicomDTO) string {
 	pixelDataElement, err := dto.Dataset.FindElementByTag(tag.PixelData)
 	if err != nil {

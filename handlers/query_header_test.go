@@ -49,11 +49,13 @@ func TestQueryHeader(t *testing.T) {
 	})
 
 	t.Run("it returns header attribute based on tag given", func(t *testing.T) {
+		// Copy a test file into the file repository path
 		instanceId := "1.2.826.0.1.3680043.2.1074.8138928452617025399165543974931135073"
 		input, _ := os.ReadFile("../test_data/IM000002")
 		err := os.WriteFile(filepath.Join(dir1, fmt.Sprintf("%s.dcm", instanceId)), input, 0644)
 		assert.Nil(t, err)
 
+		// Setup the request
 		queryValues := url.Values{}
 		queryValues.Add("tag", "(0008,0090)")
 		request, _ := http.NewRequest(http.MethodGet, fmt.Sprintf("/instance/%s?%s", instanceId, queryValues.Encode()), nil)

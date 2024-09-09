@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"errors"
 	"io/fs"
+	"log/slog"
 	"net/http"
 
 	"github.com/tamimym/dicom-service/models"
@@ -25,6 +26,8 @@ func QueryHeader(repo repositories.Repository) http.HandlerFunc {
 			return
 		}
 
+		slog.Info("Tag Parsed", slog.String("tag", tag.String()))
+
 		dto, err := repo.Read(instanceId)
 		if err != nil {
 			if errors.Is(err, fs.ErrNotExist) {
@@ -40,7 +43,9 @@ func QueryHeader(repo repositories.Repository) http.HandlerFunc {
 			http.Error(w, err.Error(), http.StatusNotFound)
 		}
 
-		w.Header().Set("content-type", "application/json")
+		slog.Info("Element found")
+
+		w.Header().Set("Content-Type", "application/json")
 		if err = json.NewEncoder(w).Encode(element); err != nil {
 			http.Error(w, err.Error(), http.StatusInternalServerError)
 			return

@@ -20,6 +20,7 @@ func NewDicomDTO(in io.Reader, bytesToRead int64) (*DicomDTO, error) {
 		return nil, err
 	}
 
+	// SOP Instance UID serves as our dicom file's "primary key"
 	element, err := dataset.FindElementByTag(tag.SOPInstanceUID)
 	if err != nil {
 		return nil, errors.New("SOP Instance UID not found")

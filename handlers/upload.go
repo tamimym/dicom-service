@@ -12,7 +12,7 @@ import (
 
 func Upload(repo repositories.Repository) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		r.Body = http.MaxBytesReader(w, r.Body, 25<<20)
+		r.Body = http.MaxBytesReader(w, r.Body, 25<<20) // Setup 25MB size limit
 
 		file, fileHeader, err := r.FormFile("instance")
 		if err != nil {
@@ -38,7 +38,9 @@ func Upload(repo repositories.Repository) http.HandlerFunc {
 			return
 		}
 
-		w.Header().Set("content-type", "application/json")
+		slog.Info("File stored successfully")
+
+		w.Header().Set("Content-Type", "application/json")
 		if err = json.NewEncoder(w).Encode(dto); err != nil {
 			http.Error(w, err.Error(), http.StatusInternalServerError)
 			return
