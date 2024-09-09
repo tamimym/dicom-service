@@ -38,7 +38,8 @@ This will return a json response:
 
 ### Query a header attribute
 
-Query a tag on a particular instance with the following curl command
+Query a tag on a particular instance with the following curl command.
+For tag (0008,0020), the query string will look like this:
 
 ```sh
 curl http://localhost:8080/instance/1.3.12.2.1107.5.2.6.24119.30000013121716094326500000535?tag=%280008%2C0020%29
